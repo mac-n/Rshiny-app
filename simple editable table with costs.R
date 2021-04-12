@@ -2,9 +2,14 @@ library(shiny)
 library(DT)
 shinyApp(
   ui = fluidPage(
-    DTOutput('x1'),
-    #verbatimTextOutput("print")
-  ),
+    sidebarLayout(
+      sidebarPanel(
+        numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
+        actionButton("go", "Go"),
+        htmlOutput("x2")
+      ),
+      mainPanel(
+        DTOutput('x1')))),
   server = function(input, output, session) {
     x = reactiveValues(df = NULL)
     
@@ -19,6 +24,12 @@ shinyApp(
     )
     
     proxy = dataTableProxy('x1')
+    
+    output$x2<-eventReactive(input$go, {
+      #list1<-cfs(CDRSB~.,joinedcosts)
+      list1<-c(input$lamda,x$df[,1])
+      paste(list1,collapse="<br>")
+    })
     
     observeEvent(input$x1_cell_edit, {
       info = input$x1_cell_edit
