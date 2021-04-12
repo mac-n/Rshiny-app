@@ -15,11 +15,14 @@ shinyApp(
     output$tbl = renderDT(
       exportcosts, options = list( pageLength = 10, info = FALSE, lengthMenu = list(c(15, -1), c("10", "All"))),editable=list(target = "cell", disable = list(columns = c(0:0)))
     )
-    output$x1<-eventReactive(input$go, {
-      thelist<-cfs(CDRSB~.,joinedcosts)
-      thelist
+    
+    output$x2<-eventReactive(input$go, {
+      list1<-cfs(CDRSB~.,joinedcosts)
+      paste(list1,collapse="<\br>")
+      }
+
      
-    })
+    )
   
   }
 )
