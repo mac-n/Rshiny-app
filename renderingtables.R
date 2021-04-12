@@ -7,7 +7,7 @@ shinyApp(
       sidebarPanel(
          numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
          actionButton("go", "Go"),
-         textOutput("x2")
+         htmlOutput("x2")
       ),
       mainPanel(
     DTOutput('tbl')))),
@@ -18,7 +18,7 @@ shinyApp(
     
     output$x2<-eventReactive(input$go, {
       list1<-cfs(CDRSB~.,joinedcosts)
-      paste(list1,collapse="<\br>")
+      paste(list1,collapse="<br>")
       }
 
      
