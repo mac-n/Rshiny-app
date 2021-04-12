@@ -1,5 +1,7 @@
 library(shiny)
 library(DT)
+library(FSelector)
+
 shinyApp(
   ui = fluidPage(
     sidebarLayout(
@@ -27,8 +29,13 @@ shinyApp(
     
     output$x2<-eventReactive(input$go, {
       #list1<-cfs(CDRSB~.,joinedcosts)
-      list1<-c(input$lamda,x$df[,1])
-      paste(list1,collapse="<br>")
+      
+      #list1<-c(input$lamda,x$df[,1])
+      times<-x$df[,1]
+      names(times)<-rownames(x$df)
+      list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,joinedcosts[,c("CDRSB",rownames(exportcosts))])
+      text<-paste(list1,collapse="<br>")
+      paste("<b>Selected Features</b> <br>",text,sep="")
     })
     
     observeEvent(input$x1_cell_edit, {

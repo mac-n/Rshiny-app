@@ -1,0 +1,14 @@
+name: costcfs
+title: costcfs
+username:
+account: mac-n
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3946964
+bundleId: 4459688
+url: https://mac-n.shinyapps.io/costcfs/
+when: 1618211341.9297
+lastSyncTime: 1618211341.9297
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: basictabledisplay.R|editable table with costs.R|editable table.R|listviewer.R|renderingtables.R|sidebarLayout.R|simple editable table.R|updatingtables.R
