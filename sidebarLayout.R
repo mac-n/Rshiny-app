@@ -4,7 +4,9 @@ shinyApp(
   ui = fluidPage(
     sidebarLayout(
       sidebarPanel(
-         numericInput("lamda", label = "lamda - cost weighting", value = 0.01) 
+         numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
+         actionButton("go", "Go"),
+         textOutput("x2")
       ),
       mainPanel(
     DTOutput('tbl')))),
@@ -12,9 +14,8 @@ shinyApp(
     output$tbl = renderDT(
       exportcosts, options = list( pageLength = 10, info = FALSE, lengthMenu = list(c(15, -1), c("10", "All"))),editable=list(target = "cell", disable = list(columns = c(0:0)))
     )
-    observeEvent(input$do, {
-      session$sendCustomMessage(type = 'testmessage',
-                                message = 'Thank you for clicking')
+    output$x2<-eventReactive(input$go, {paste("Hello")
+     
     })
   
   }
