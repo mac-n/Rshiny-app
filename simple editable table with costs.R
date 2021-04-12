@@ -3,7 +3,7 @@ library(DT)
 shinyApp(
   ui = fluidPage(
     DTOutput('x1'),
-    verbatimTextOutput("print")
+    #verbatimTextOutput("print")
   ),
   server = function(input, output, session) {
     x = reactiveValues(df = NULL)
@@ -14,7 +14,9 @@ shinyApp(
       x$df <- df
     })
     
-    output$x1 = renderDT(x$df, selection = 'none', editable = TRUE)
+    output$x1 = renderDT(x$df,
+       options = list( pageLength = 10, info = FALSE, lengthMenu = list(c(15, -1), c("10", "All"))),editable=list(target = "cell", disable = list(columns = c(0:0)))
+    )
     
     proxy = dataTableProxy('x1')
     
