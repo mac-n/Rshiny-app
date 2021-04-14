@@ -9,7 +9,7 @@ shinyApp(
         numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
         actionButton("go", "Go"),
         htmlOutput("x2")
-      ),
+            ),
       mainPanel(
         DTOutput('x1')))),
   server = function(input, output, session) {
@@ -35,7 +35,9 @@ shinyApp(
       names(times)<-rownames(x$df)
       list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,joinedcosts[,c("CDRSB",rownames(exportcosts))])
       text<-paste(list1,collapse="<br>")
-      paste("<b>Selected Features</b> <br>",text,sep="")
+      val=80
+      paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Diagnostic Accuracy: </b>",val,"%",sep="")
+      
     })
     
     observeEvent(input$x1_cell_edit, {
