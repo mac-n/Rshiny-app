@@ -46,12 +46,16 @@ shinyApp(
       testdf<-tempdf[-yy,]
       list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)
       
-      text<-paste(list1,collapse="<br>")
+      #text<-paste(list1,collapse="<br>")
       
       model<-randomForest(CDRSB~.,traindf)
       predicted<-predict(model,testdf)
       auc<-multiclass.roc(as.ordered(testdf$CDRSB),as.ordered(predicted))
       val=round(auc$auc,3)
+      text=""
+      for (i in 1:length(list1))
+      text=paste(text,"\t",list1[i],"\t",round(model$importance[rownames(model$importance)==list1[i]],3),"<br>")
+
       paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
       
     })
