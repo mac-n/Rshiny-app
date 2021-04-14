@@ -52,14 +52,15 @@ shinyApp(
       predicted<-predict(model,testdf)
       auc<-multiclass.roc(as.ordered(testdf$CDRSB),as.ordered(predicted))
       val=round(auc$auc,3)
-      text=""
-      for (i in 1:length(list1))
-      text=paste(text,"\t",list1[i],"\t",round(model$importance[rownames(model$importance)==list1[i]],3),"<br>")
-
-      paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
+      text=paste("<table>")
+      for (i in 1:length(list1)){
+      text=paste(text,"<tr><td>",list1[i],"</td><td>",round(model$importance[rownames(model$importance)==list1[i]],2),"</td></tr>")
       
-    })
+      }
+    text=paste(text,"</table><br>")
+    paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
     
+    })
     observeEvent(input$x1_cell_edit, {
       info = input$x1_cell_edit
       str(info)
