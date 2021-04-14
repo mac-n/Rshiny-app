@@ -1,7 +1,9 @@
 library(shiny)
 library(DT)
 library(FSelector)
-
+library(caret)
+library(pROC)
+library(randomForest)
 shinyApp(
   ui = fluidPage(
     sidebarLayout(
@@ -32,11 +34,25 @@ shinyApp(
       
       #list1<-c(input$lamda,x$df[,1])
       times<-x$df[,1]
+      
       names(times)<-rownames(x$df)
-      list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,joinedcosts[,c("CDRSB",rownames(exportcosts))])
+      tempdf<-joinedcosts[,c("CDRSB",names(times))]
+      set.seed(100)
+      y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
+      fsdf<-tempdf[y,]
+      tempdf<-tempdf[-y,]
+      yy<-createDataPartition(tempdf$CDRSB,p=0.75,list=FALSE)
+      traindf<-tempdf[yy,]
+      testdf<-tempdf[-yy,]
+      list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)
+      
       text<-paste(list1,collapse="<br>")
-      val=80
-      paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Diagnostic Accuracy: </b>",val,"%",sep="")
+      
+      model<-randomForest(CDRSB~.,traindf)
+      predicted<-predict(model,testdf)
+      auc<-multiclass.roc(as.ordered(testdf$CDRSB),as.ordered(predicted))
+      val=round(auc$auc,3)
+      paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
       
     })
     
@@ -47,7 +63,8 @@ shinyApp(
       j = info$col
       v = info$value
       
-      # problem starts here
+      
+      
       x$df[i, j] <- isolate(DT::coerceValue(v, x$df[i, j]))
     })
     
