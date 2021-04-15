@@ -13,12 +13,32 @@ shinyApp(
         htmlOutput("x2")
             ),
       mainPanel(
+        multiInput(
+          inputId = "id", label = "Subassessments :",
+          choices = c("All MMSE", rownames(exportcosts)),
+          selected = rownames(exportcosts), width = "400px",
+          options = list(
+            enable_search = FALSE,
+            non_selected_header = "Choose between:",
+            selected_header = "You have selected:"
+          )),
         DTOutput('x1')))),
+#' Title
+#'
+#' @param input 
+#' @param output 
+#' @param session 
+#'
+#' @return
+#' @export
+#'
+#' @examples
   server = function(input, output, session) {
     x = reactiveValues(df = NULL)
     
     observe({
-      df <- exportcosts
+      df <- data.frame(input$id,exportcosts[input$id,])
+      
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- df
     })
@@ -35,7 +55,7 @@ shinyApp(
       #list1<-c(input$lamda,x$df[,1])
       times<-x$df[,1]
       
-      names(times)<-rownames(x$df)
+      names(times)<-x$df[,0]
       tempdf<-joinedcosts[,c("CDRSB",names(times))]
       set.seed(100)
       y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
