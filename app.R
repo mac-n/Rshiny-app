@@ -9,6 +9,22 @@ shinyApp(
     sidebarLayout(
       sidebarPanel(
         numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
+        
+        
+        
+        
+        switchInput(
+          inputId = "Id015",
+          label = "Feature Selection",
+          size="mini",
+          labelWidth = "120px",
+          value=TRUE
+          
+        ),
+        
+        
+        
+        
         actionButton("go", "Go"),
         htmlOutput("x2")
             ),
