@@ -13,14 +13,7 @@ shinyApp(
         
         
         
-        switchInput(
-          inputId = "Id015",
-          label = "Feature Selection",
-          size="mini",
-          labelWidth = "120px",
-          value=TRUE
-          
-        ),
+        
         
         
         
@@ -29,6 +22,14 @@ shinyApp(
         htmlOutput("x2")
             ),
       mainPanel(
+        switchInput(
+          inputId = "switch",
+          label = "Feature Selection",
+          size="mini",
+          labelWidth = "120px",
+          value=TRUE
+          
+        ),
         selectInput(
           inputId = "choose",
           label = "Update selected:",
@@ -75,7 +76,7 @@ shinyApp(
     
     output$x2<-eventReactive(input$go, {
       #list1<-cfs(CDRSB~.,joinedcosts)
-      
+      print(input$switch)
       #list1<-c(input$lamda,x$df[,1])
       times<-x$df[,2]
       
@@ -84,11 +85,12 @@ shinyApp(
       set.seed(100)
       y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
       fsdf<-tempdf[y,]
+      vec1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)
       tempdf<-tempdf[-y,]
       yy<-createDataPartition(tempdf$CDRSB,p=0.75,list=FALSE)
       traindf<-tempdf[yy,]
       testdf<-tempdf[-yy,]
-      list1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)
+      
       
       #text<-paste(list1,collapse="<br>")
       
@@ -97,12 +99,12 @@ shinyApp(
       auc<-multiclass.roc(as.ordered(testdf$CDRSB),as.ordered(predicted))
       val=round(auc$auc,3)
       text=paste("<table>")
-      for (i in 1:length(list1)){
-      text=paste(text,"<tr><td>",list1[i],"</td><td>",round(model$importance[rownames(model$importance)==list1[i]],2),"</td></tr>")
+      for (i in 1:length(vec1)){
+      text=paste(text,"<tr><td>",vec1[i],"</td><td>",round(model$importance[rownames(model$importance)==vec1[i]],2),"</td></tr>")
       
       }
     text=paste(text,"</table><br>")
-    paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
+    paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[vec1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
     
     })
     
