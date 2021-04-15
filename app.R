@@ -13,9 +13,16 @@ shinyApp(
         htmlOutput("x2")
             ),
       mainPanel(
+        selectInput(
+          inputId = "selected",
+          label = "Update selected:",
+          choices = c("Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
+          multiple = FALSE,
+          selected="Feature selection default"
+        ),
         multiInput(
           inputId = "id", label = "Subassessments :",
-          choices = c("All MMSE", rownames(exportcosts)),
+          choices =  rownames(exportcosts),
           selected = rownames(exportcosts), width = "400px",
           options = list(
             enable_search = FALSE,
@@ -37,6 +44,7 @@ shinyApp(
     x = reactiveValues(df = NULL)
     
     observe({
+      
       df <- data.frame(input$id,exportcosts[input$id,])
       
       #df$Date = Sys.time() + seq_len(nrow(df))
@@ -81,6 +89,8 @@ shinyApp(
     paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[list1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
     
     })
+    
+   
     observeEvent(input$x1_cell_edit, {
       info = input$x1_cell_edit
       str(info)
