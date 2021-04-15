@@ -10,8 +10,16 @@ shinyApp(
       sidebarPanel(
         numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
         
+          
         
-        
+          switchInput(
+            inputId = "switch",
+            label = "Feature Selection",
+            size="mini",
+            labelWidth = "120px",
+            value=TRUE
+            
+          ),
         
         
         
@@ -22,14 +30,6 @@ shinyApp(
         htmlOutput("x2")
             ),
       mainPanel(
-        switchInput(
-          inputId = "switch",
-          label = "Feature Selection",
-          size="mini",
-          labelWidth = "120px",
-          value=TRUE
-          
-        ),
         selectInput(
           inputId = "choose",
           label = "Update selected:",
@@ -63,9 +63,10 @@ shinyApp(
     observe({
       
       df <- data.frame(input$id,allcosts[input$id,])
-      
+      switch<-input$switch
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- df
+      x$switch <-switch
     })
     
     output$x1 = renderDT(x$df,
@@ -76,7 +77,7 @@ shinyApp(
     
     output$x2<-eventReactive(input$go, {
       #list1<-cfs(CDRSB~.,joinedcosts)
-      print(input$switch)
+      print(x$switch)
       #list1<-c(input$lamda,x$df[,1])
       times<-x$df[,2]
       
@@ -85,7 +86,10 @@ shinyApp(
       set.seed(100)
       y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
       fsdf<-tempdf[y,]
-      vec1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)
+      if(x$switch){
+      vec1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)}
+      else{vec1<-names(times)}
+      
       tempdf<-tempdf[-y,]
       yy<-createDataPartition(tempdf$CDRSB,p=0.75,list=FALSE)
       traindf<-tempdf[yy,]
@@ -107,8 +111,14 @@ shinyApp(
     paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[vec1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
     
     })
-    
    
+   observeEvent(input$switch,{
+     print(input$switch)
+     x$switch<-input$switch
+     updateSwitchInput(session = session,
+                       inputId = "switch",
+                       value = !input$switch)
+   })
     observeEvent(input$x1_cell_edit, {
       info = input$x1_cell_edit
       str(info)
@@ -121,7 +131,7 @@ shinyApp(
       x$df[i, j] <- isolate(DT::coerceValue(v, x$df[i, j]))
     })
     observeEvent(input$choose, {
-      print(input$choose)
+      #print(input$choose)
       if(identical(input$choose,"Feature selection default")){
         #print("identical")
         temp = unique(c(rownames(exportcosts),input$id))
