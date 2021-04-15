@@ -42,7 +42,8 @@ server <- function(input, output, session) {
     updateMultiInput(
       session = session,
       inputId = "my_multi",
-      selected = input$selected
+      selected = input$selected,
+      print(input$selected)
     )
   })
   

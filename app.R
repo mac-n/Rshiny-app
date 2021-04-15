@@ -16,14 +16,14 @@ shinyApp(
         selectInput(
           inputId = "choose",
           label = "Update selected:",
-          choices = c("MMDATE","Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
+          choices = c("Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
           multiple = FALSE,
           selected="Feature selection default"
         ),
         multiInput(
           inputId = "id", label = "Subassessments :",
           choices =  rownames(exportcosts),
-          selected = rownames(exportcosts), width = "400px",
+          selected = rownames(exportcosts), width = "500px",
           options = list(
             enable_search = FALSE,
             non_selected_header = "Choose between:",
@@ -103,10 +103,26 @@ shinyApp(
       x$df[i, j] <- isolate(DT::coerceValue(v, x$df[i, j]))
     })
     observeEvent(input$choose, {
+      print(input$choose)
+      if(identical(input$choose,"Feature selection default")){
+        #print("identical")
+        temp = rownames(exportcosts)
+        
+      }else if(identical(input$choose,"All MMSE")){
+        #print("identical")
+        temp=unique(c(rownames(exportcosts)[grep("^MM",rownames(exportcosts))],input$id)) 
+      }else if(identical(input$choose,"All ADAS")){
+        temp=unique(c(rownames(exportcosts)[grep("SCORE$",rownames(exportcosts))],input$id)) 
+      }else if(identical(input$choose,"All FAQ")){
+        temp=unique(c(rownames(exportcosts)[grep("^FAQ",rownames(exportcosts))],input$id)) 
+      }else if(identical(input$choose,"Deselect All")){
+        temp=""
+        }
+      
       updateMultiInput(
         session = session,
         inputId = "id",
-        selected = input$choose
+        selected=temp
       )
     })
     output$print <- renderPrint({
