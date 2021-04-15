@@ -12,11 +12,9 @@ shinyApp(
         
           
         
-          switchInput(
+          checkboxInput(
             inputId = "switch",
             label = "Feature Selection",
-            size="mini",
-            labelWidth = "120px",
             value=TRUE
             
           ),
@@ -108,16 +106,16 @@ shinyApp(
       
       }
     text=paste(text,"</table><br>")
-    paste("<b>Selected Features</b> <br>",text, "<br> <b>Diagnosis Time: </b>",sum(times[vec1])," seconds <br> <b>Multiclass AUC: </b>",val,sep="")
+    text=paste("<b>Feature Importance</b><br>",text) 
+    if (x$switch){text=paste("<b>Diagnosis Time: </b>",sum(times[vec1])," seconds <br>",text,sep="")}
+    paste("<b>Multiclass AUC: </b>",val,"<br>",text,sep="")
     
     })
    
    observeEvent(input$switch,{
      print(input$switch)
      x$switch<-input$switch
-     updateSwitchInput(session = session,
-                       inputId = "switch",
-                       value = !input$switch)
+     
    })
     observeEvent(input$x1_cell_edit, {
       info = input$x1_cell_edit
