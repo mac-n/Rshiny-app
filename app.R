@@ -14,9 +14,9 @@ shinyApp(
             ),
       mainPanel(
         selectInput(
-          inputId = "selected",
+          inputId = "choose",
           label = "Update selected:",
-          choices = c("Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
+          choices = c("MMDATE","Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
           multiple = FALSE,
           selected="Feature selection default"
         ),
@@ -102,7 +102,13 @@ shinyApp(
       
       x$df[i, j] <- isolate(DT::coerceValue(v, x$df[i, j]))
     })
-    
+    observeEvent(input$choose, {
+      updateMultiInput(
+        session = session,
+        inputId = "id",
+        selected = input$choose
+      )
+    })
     output$print <- renderPrint({
       x$df
     })
