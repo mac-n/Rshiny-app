@@ -22,7 +22,7 @@ shinyApp(
         ),
         multiInput(
           inputId = "id", label = "Subassessments :",
-          choices =  rownames(exportcosts),
+          choices =  rownames(allcosts),
           selected = rownames(exportcosts), width = "500px",
           options = list(
             enable_search = FALSE,
@@ -45,7 +45,7 @@ shinyApp(
     
     observe({
       
-      df <- data.frame(input$id,exportcosts[input$id,])
+      df <- data.frame(input$id,allcosts[input$id,])
       
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- df
@@ -64,7 +64,7 @@ shinyApp(
       times<-x$df[,2]
       
       names(times)<-x$df[,1]
-      tempdf<-joinedcosts[,c("CDRSB",names(times))]
+      tempdf<-joined[,c("CDRSB",names(times))]
       set.seed(100)
       y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
       fsdf<-tempdf[y,]
@@ -106,15 +106,15 @@ shinyApp(
       print(input$choose)
       if(identical(input$choose,"Feature selection default")){
         #print("identical")
-        temp = rownames(exportcosts)
+        temp = unique(c(rownames(exportcosts),input$id))
         
       }else if(identical(input$choose,"All MMSE")){
         #print("identical")
-        temp=unique(c(rownames(exportcosts)[grep("^MM",rownames(exportcosts))],input$id)) 
+        temp=unique(c(rownames(allcosts)[grep("^MM",rownames(allcosts))],input$id)) 
       }else if(identical(input$choose,"All ADAS")){
-        temp=unique(c(rownames(exportcosts)[grep("SCORE$",rownames(exportcosts))],input$id)) 
+        temp=unique(c(rownames(allcosts)[grep("SCORE$",rownames(allcosts))],input$id)) 
       }else if(identical(input$choose,"All FAQ")){
-        temp=unique(c(rownames(exportcosts)[grep("^FAQ",rownames(exportcosts))],input$id)) 
+        temp=unique(c(rownames(allcosts)[grep("^FAQ",rownames(allcosts))],input$id)) 
       }else if(identical(input$choose,"Deselect All")){
         temp=""
         }
