@@ -53,9 +53,9 @@ shinyApp(
       #list1<-cfs(CDRSB~.,joinedcosts)
       
       #list1<-c(input$lamda,x$df[,1])
-      times<-x$df[,1]
+      times<-x$df[,2]
       
-      names(times)<-x$df[,0]
+      names(times)<-x$df[,1]
       tempdf<-joinedcosts[,c("CDRSB",names(times))]
       set.seed(100)
       y<-createDataPartition(tempdf$CDRSB,p=0.25,list=FALSE)
