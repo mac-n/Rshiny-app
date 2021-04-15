@@ -47,7 +47,12 @@
     ),
     verbatimTextOutput(outputId = "res")
   )
-  
+  x = reactiveValues(df = NULL)
+  observe({
+    df <- data
+    #df$Date = Sys.time() + seq_len(nrow(df))
+    x$df <- df
+  })
   server <- function(input, output, session) {
     x = reactiveValues(df = NULL)
     output$res <- renderPrint({
@@ -55,7 +60,7 @@
     })
     observe({
       inputId = "id"
-      df <- input$selected
+      df <- exportcosts
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- data.frame(df)
     })

@@ -1,7 +1,7 @@
 
 library(shiny)
 library(shinyWidgets)
-library(DT)
+
 fruits <- c("Banana", "Blueberry", "Cherry",
             "Coconut", "Grapefruit", "Kiwi",
             "Lemon", "Lime", "Mango", "Orange",
@@ -16,7 +16,7 @@ ui <- fluidPage(
     selected = "Banana",
     width = "350px"
   ),
-  verbatimTextOutput(outputId = "res"),
+  DTOutput(outputId = "res"),
   selectInput(
     inputId = "selected",
     label = "Update selected:",
@@ -27,9 +27,17 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  x = reactiveValues(df = NULL)
+  observe({
+    df <- data.frame(input$my_multi)
+    #df$Date = Sys.time() + seq_len(nrow(df))
+    x$df <- df
+  })
   
-  output$res <- renderPrint(input$my_multi)
-  
+  output$res <- renderDT(x$df,
+  options = list( pageLength = 10, info = FALSE, lengthMenu = list(c(15, -1), c("10", "All"))),editable=list(target = "cell", disable = list(columns = c(0:0)))
+  )
+
   observeEvent(input$selected, {
     updateMultiInput(
       session = session,
