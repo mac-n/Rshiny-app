@@ -4,12 +4,10 @@ library(FSelector)
 library(caret)
 library(pROC)
 library(randomForest)
-library(shinyWidgets)
 shinyApp(
   ui = fluidPage(
     sidebarLayout(
       sidebarPanel(
-        #numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
         sliderInput(
           "lamda",
           label="Cost Weighting- set to 0 for cost-insensitive feature selection",
@@ -18,7 +16,6 @@ shinyApp(
           value=0,
           step=0.001
         ),
-        
         
           
         
@@ -41,7 +38,7 @@ shinyApp(
         selectInput(
           inputId = "choose",
           label = "Update selected:",
-          choices = c("Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
+          choices = c("Feature selection default","All MMSE", "All ADAS", "All MocA","All FAQ","Deselect All"),
           multiple = FALSE,
           selected="Feature selection default"
         ),
@@ -51,10 +48,9 @@ shinyApp(
           selected = rownames(exportcosts), width = "500px",
           options = list(
             enable_search = FALSE,
-            non_selected_header = "Non-selected items:",
+            non_selected_header = "Choose between:",
             selected_header = "You have selected:"
           )),
-        
         DTOutput('x1')))),
 #' Title
 #'
@@ -72,7 +68,6 @@ shinyApp(
     observe({
       
       df <- data.frame(input$id,allcosts[input$id,])
-      colnames(df)<-c("Item","Assessment Time (seconds)")
       switch<-input$switch
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- df
@@ -100,7 +95,7 @@ shinyApp(
       vec1<-cost_cfs(CDRSB ~.,lamda=input$lamda,costs=times,tempdf)}
       else{vec1<-names(times)}
       
-      tempdf<-tempdf[-y,c("CDRSB",vec1)]
+      tempdf<-tempdf[-y,]
       yy<-createDataPartition(tempdf$CDRSB,p=0.75,list=FALSE)
       traindf<-tempdf[yy,]
       testdf<-tempdf[-yy,]
@@ -109,13 +104,12 @@ shinyApp(
       #text<-paste(list1,collapse="<br>")
       
       model<-randomForest(CDRSB~.,traindf)
-      vec2<-rownames(model$importance)[order(-model$importance)]
       predicted<-predict(model,testdf)
       auc<-multiclass.roc(as.ordered(testdf$CDRSB),as.ordered(predicted))
       val=round(auc$auc,3)
       text=paste("<table>")
-      for (i in 1:length(vec2)){
-      text=paste(text,"<tr><td>",vec1[i],"</td><td>",round(model$importance[rownames(model$importance)==vec2[i]],2),"</td></tr>")
+      for (i in 1:length(vec1)){
+      text=paste(text,"<tr><td>",vec1[i],"</td><td>",round(model$importance[rownames(model$importance)==vec1[i]],2),"</td></tr>")
       
       }
     text=paste(text,"</table><br>")
@@ -153,11 +147,12 @@ shinyApp(
       }else if(identical(input$choose,"All ADAS")){
         temp=unique(c(rownames(allcosts)[grep("SCORE$",rownames(allcosts))],input$id)) 
       }else if(identical(input$choose,"All FAQ")){
-        temp=unique(c(rownames(allcosts)[grep("^FAQ",rownames(allcosts))],input$id)) 
+        temp=unique(c(rownames(allcosts)[grep("^FAQ",rownames(allcosts))],input$id))
+      }else if(identical(input$choose,"All MoCA")){
+        temp=""
       }else if(identical(input$choose,"Deselect All")){
         temp=""
-      }
-        
+        }
       
       updateMultiInput(
         session = session,
