@@ -7,16 +7,23 @@ library(randomForest)
 library(shinyWidgets)
 shinyApp(
   ui = fluidPage(
+    #from https://stackoverflow.com/questions/35251788/hide-values-of-sliderinput-in-shiny
+    tags$head(tags$style(HTML('.irs-from, .irs-to, .irs-min, .irs-max, .irs-single {
+            visibility: hidden !important;
+    }'))),
     sidebarLayout(
       sidebarPanel(
         #numericInput("lamda", label = "lamda - cost weighting", value = 0.01),
         sliderInput(
-          "lamda",
-          label="Cost Weighting- set to 0 for cost-insensitive feature selection",
+          
+          inputId = "lamda",
+          
+          label="Cost Weighting- set to zero for cost-insensitive feature selection",
           min=0,
           max=0.01,
           value=0,
-          step=0.001
+          step=0.001,
+          ticks=FALSE
         ),
         
         
@@ -46,12 +53,13 @@ shinyApp(
           selected="Feature selection default"
         ),
         multiInput(
-          inputId = "id", label = "Subassessments :",
-          choices =  rownames(allcosts),
+          inputId = "id", label = "Assessment items :",
+          choices =  rownames(allcosts)[-2]
+,
           selected = rownames(exportcosts), width = "500px",
           options = list(
             enable_search = FALSE,
-            non_selected_header = "Non-selected items:",
+            non_selected_header = "Available items:",
             selected_header = "You have selected:"
           )),
         
@@ -70,9 +78,10 @@ shinyApp(
     x = reactiveValues(df = NULL)
     
     observe({
-      
-      df <- data.frame(input$id,allcosts[input$id,])
-      colnames(df)<-c("Item","Assessment Time (seconds)")
+      temp<-data.frame(input$id)
+      colnames(temp)<-"FLDNAME"
+      df <- allq[allq$FLDNAME %in% rownames(exportcosts),]
+      colnames(df)<-c("Item","Assessment Time (seconds)","Assessment","Item Description")
       switch<-input$switch
       #df$Date = Sys.time() + seq_len(nrow(df))
       x$df <- df
