@@ -8,7 +8,7 @@ library(shinyWidgets)
 shinyApp(
   ui = fluidPage(
     #from https://stackoverflow.com/questions/35251788/hide-values-of-sliderinput-in-shiny
-    tags$head(tags$style(HTML('.irs-from, .irs-to, .irs-min, .irs-max, .irs-single {
+    tags$head(tags$style(HTML(' .irs-to, .irs-min, .irs-max, .irs-single {
             visibility: hidden !important;
     }'))),
     sidebarLayout(
@@ -18,12 +18,15 @@ shinyApp(
           
           inputId = "lamda",
           
-          label="Cost Weighting- set to zero for cost-insensitive feature selection",
+          label="Cost Weighting- slide to left for cost-insensitive feature selection",
+          #https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+          
           min=0,
-          max=0.01,
+          max=0.02,
           value=0,
           step=0.001,
           ticks=FALSE
+          #width='250px'
         ),
         
         
@@ -31,7 +34,7 @@ shinyApp(
         
           checkboxInput(
             inputId = "switch",
-            label = "Feature Selection",
+            label = "Perform Feature Selection on Chosen Assessment Items",
             value=TRUE
             
           ),
@@ -41,16 +44,16 @@ shinyApp(
         
         
         
-        actionButton("go", "Go"),
+        actionButton("go", "Run Tests"),
         htmlOutput("x2")
             ),
       mainPanel(
         selectInput(
           inputId = "choose",
-          label = "Update selected:",
-          choices = c("Feature selection default","All MMSE", "All ADAS", "All FAQ","Deselect All"),
+          label = "Add to your choices:",
+          choices = c("Most informative items","All MMSE", "All ADAS", "All FAQ","All MoCA","Deselect All"),
           multiple = FALSE,
-          selected="Feature selection default"
+          selected="Most informative items"
         ),
         multiInput(
           inputId = "id", label = "Assessment items :",
@@ -60,7 +63,7 @@ shinyApp(
           options = list(
             enable_search = FALSE,
             non_selected_header = "Available items:",
-            selected_header = "You have selected:"
+            selected_header = "You have chosen:"
           )),
         
         DTOutput('x1')))),
@@ -78,9 +81,8 @@ shinyApp(
     x = reactiveValues(df = NULL)
     
     observe({
-      temp<-data.frame(input$id)
-      colnames(temp)<-"FLDNAME"
-      df <- allq[allq$FLDNAME %in% rownames(exportcosts),]
+     
+      df <- allq[allq$FLDNAME %in% input$id,]
       colnames(df)<-c("Item","Assessment Time (seconds)","Assessment","Item Description")
       switch<-input$switch
       #df$Date = Sys.time() + seq_len(nrow(df))
@@ -152,7 +154,7 @@ shinyApp(
     })
     observeEvent(input$choose, {
       #print(input$choose)
-      if(identical(input$choose,"Feature selection default")){
+      if(identical(input$choose,"Most informative items")){
         #print("identical")
         temp = unique(c(rownames(exportcosts),input$id))
         
@@ -162,7 +164,9 @@ shinyApp(
       }else if(identical(input$choose,"All ADAS")){
         temp=unique(c(rownames(allcosts)[grep("SCORE$",rownames(allcosts))],input$id)) 
       }else if(identical(input$choose,"All FAQ")){
-        temp=unique(c(rownames(allcosts)[grep("^FAQ",rownames(allcosts))],input$id)) 
+        temp=unique(c(rownames(allcosts)[grep("^FAQ",rownames(allcosts))],input$id))
+      }else if(identical(input$choose,"All MoCA")){
+        temp=unique(c(c("i6serial","visuo","naming","attention","language","abstraction","orientation","delayedRecall"),input$id))
       }else if(identical(input$choose,"Deselect All")){
         temp=""
       }
