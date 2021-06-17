@@ -5,10 +5,10 @@ account: mac-n
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3946964
-bundleId: 4486880
+bundleId: 4713427
 url: https://mac-n.shinyapps.io/costcfs/
-when: 1618756580.0323
-lastSyncTime: 1618756580.0323
+when: 1623653470.87162
+lastSyncTime: 1623653470.87177
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: basictabledisplay.R|editable table with costs.R|editable table.R|listviewer.R|multiinput1.R|multiinput2.R|renderingtables.R|sidebarLayout.R|simple editable table.R|updatingtables.R
+ignoredFiles: adas13.csv|basictabledisplay.R|costcfs.R|data dictionary info.R|editable table with costs.R|editable table.R|listviewer.R|multiinput1.R|multiinput2.R|renderingtables.R|sidebarLayout.R|simple editable table with costs.R|simple editable table.R|updatingtables.R|working.R
