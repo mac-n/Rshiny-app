@@ -1,3 +1,6 @@
+#adapted from the CFS function from the FSelector package
+#https://cran.r-project.org/web/packages/FSelector/FSelector.pdf
+
 cost_cfs<-function(formula, data, costs, lamda) {
   #names(costs)<-names(data)
   cont_correlation <- function(a, b) {
