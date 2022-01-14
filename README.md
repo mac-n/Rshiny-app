@@ -21,6 +21,7 @@ Run Step 3 to perform feature selection. This is the most computationally intens
 Step 4 evaluates the mean multiclass AUC of each selected feature set in turn and saves the results in a matrix. 
 
 See "Figure 1.pdf" in this repository or Figure 1 in the paper for a graphical schema of Steps 3 and 4. 
+The feature sets selected by Step 3 along with the AUC evaluated by Step 4  are shown in the first worksheet of the Excel file JTEHM_McCombe_data.xslx. 
 
 ### Generate Graphs
 Step 5 creates the circular bar chart in Figure 3 of the paper. 
@@ -36,6 +37,8 @@ Run Step 6a to load some functions which are called by cost_cfs (all taken from 
 Run Step 6b to load cost_cfs itself.
 Run Step 6c to perform cost sensitive feature selection on this data, over a range of values of the lamda parameter. 
 Step 6c requires a csv file as input ("times.csv") with feature names and associated estimated feature costs. We have included our instance of times.csv in this repository.
+
+The feature sets selected by this step, with associated AUC and estimated total assessment time, are shown in the second worksheet of the Excel file JTEHM_McCombe_data.xslx.
 
 ### Generate Graphs for Cost Sensitive Feature Selection
 
